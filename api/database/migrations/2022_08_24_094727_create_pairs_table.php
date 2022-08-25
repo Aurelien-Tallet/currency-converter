@@ -17,9 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedDouble('rate');
+            // $table->unsignedBigInteger('currency_id_from')->nullable();
+            // $table->unsignedBigInteger('currency_id_to')->nullable();
+
 
             $table->foreignId('currency_id_from')->references('id')->on('currencies');
-
             $table->foreignId('currency_id_to')->references('id')->on('currencies');
         });
     }

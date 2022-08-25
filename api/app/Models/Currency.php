@@ -9,7 +9,8 @@ class Currency extends Model
 {
     use HasFactory;
     public $timestamps = false;
-   protected $fillable = [
+    private $id;
+    protected $fillable = [
         'name',
         'symbol',
         'code',
@@ -29,6 +30,13 @@ class Currency extends Model
     {
         return $this->code;
     }
+    public function pair()
+    {
+        return $this->hasMany(Pair::class);
+    }
 
-
+    public static function getByCode($code)
+    {
+        return self::where('code', $code)->first();
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PairController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Currency converter with prefix api/
-Route::prefix('api')->group(function () {
-    Route::get('/convert/{from}/{to}/{amount}', 'ConverterController@convert');
-});
+Route::apiResource('/pairs', PairController::class, ['only' => ['index', 'show']]);
+Route::get('/convert', PairController::class . '@convert');
