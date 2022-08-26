@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PairController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,10 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->apiResource('/pairs', PairController::class, ['only' => ['update', 'destroy', 'store']]);
 
 // Currency converter with prefix api/
-Route::apiResource('/pairs', PairController::class, ['only' => ['index', 'show']]);
-Route::get('/convert', PairController::class . '@convert');
+// Route::apiResource('/pairs', PairController::class, ['only' => ['index', 'show']]);
+// Route::get('/convert', PairController::class . '@convert');
+Route::get('/convert', [PairController::class, 'convert']);
+
+Route::post('login', [AuthController::class, 'authenticate']);
+
+Route::get('/pairs', [PairController::class, 'index'])->middleware('auth:sanctum');

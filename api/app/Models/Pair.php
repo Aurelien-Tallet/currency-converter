@@ -41,6 +41,7 @@ class Pair extends Model
     {
         $from = $currency_from->id;
         $to = $currency_to->id;
+        
         $pair = self::where('currency_id_from', $from)->orWhere('currency_id_from', $to)->where('currency_id_to', $to)->orWhere('currency_id_to', $from)->first();
         if(!$pair) return null;
 

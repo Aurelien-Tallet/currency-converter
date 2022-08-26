@@ -17,16 +17,10 @@ class PairController extends Controller
     public function index()
     {
         // return all pair data to json format or return error message if no pair data found;
-        $pair = Pair::all()->map(function($item){
-            return [
-                'name' => $item->name,
-                'rate' => $item->rate,
-                'currency_from' => $item->currency_from,
-                'currency_to' => $item->currency_to,
-            ];
-        });
-        if(!$pair) return response()->json(['error' => 'No pair data found'], 404);
-        return response()->json($pair, 200);
+        $pairs = Pair::with('currency_from', 'currency_to')->get();
+
+        if(!$pairs) return response()->json(['error' => 'No pair data found'], 404);
+        return response()->json($pairs, 200);
     }
 
     /**
@@ -46,7 +40,7 @@ class PairController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return response()->json(['error' => 'Not implemented'], 501);
     }
     // create route function to convert currency pair from one currency to another currency;
     /**
@@ -86,11 +80,12 @@ class PairController extends Controller
         if ($from == $pair->currency_to->code) {
             $rate = 1 / $rate;
         }
-        $result = $amount * $rate;
+
+       $result = $amount * $rate;
         return response()->json(
             [
-                'from' => $from,
-                'to' => $to,
+                'from' => $currency_from,
+                'to' => $currency_to,
                 'amount' => $amount,
                 'base_rate' => $pair->rate, // base rate is the rate of the pair's model;
                 'rate' => $rate,
