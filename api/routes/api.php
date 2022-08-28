@@ -32,7 +32,7 @@ Route::get('/currencies', [CurrencyController::class, 'index']);
 
 // Ping route for testing if the DATABASE is connected
 Route::get('ping', function () {
-    // text if the database is connected
+    // test if the database is connected
     try {
         DB::connection()->getPdo();
         return response()->json(['message' => 'API running'], 200);
