@@ -24,7 +24,13 @@ class DatabaseSeeder extends Seeder
                 PairTableSeeder::class
             ]
         );
-
-
+        // create admin user
+        User::create([
+            'name' => 'admin',
+            'email' => 'admin@admin.fr',
+            'password' => bcrypt('admin'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

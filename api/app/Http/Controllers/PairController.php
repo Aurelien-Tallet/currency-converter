@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conversions;
 use App\Models\Currency;
 use App\Models\Pair;
 use Illuminate\Http\Request;
@@ -17,9 +18,10 @@ class PairController extends Controller
     public function index()
     {
         // return all pair data to json format or return error message if no pair data found;
-        $pairs = Pair::with('currency_from', 'currency_to')->get();
+        $pairs = Pair::with('currency_from', 'currency_to', 'conversions')->get();
 
-        if(!$pairs) return response()->json(['error' => 'No pair data found'], 404);
+
+        if (!$pairs) return response()->json(['error' => 'No pair data found'], 404);
         return response()->json($pairs, 200);
     }
 
@@ -40,7 +42,26 @@ class PairController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json(['error' => 'Not implemented'], 501);
+        // validate request data
+        $validator = Validator::make($request->all(), [
+            'currency_id_from' => 'required|exists:currencies,id',
+            'currency_id_to' => 'required|exists:currencies,id',
+            'rate' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+        $currency_from = Currency::find($request->currency_id_from);
+        $currency_to = Currency::find($request->currency_id_to);
+        $pair = Pair::create(
+            [
+                'name' => $currency_from->name . '_' . $currency_to->name,
+                'currency_id_from' => $request->currency_id_from,
+                'currency_id_to' => $request->currency_id_to,
+                'rate' => $request->input('rate'),
+            ]
+        );
+        return response()->json(['success' => 'Pair created successfully'], 200);
     }
     // create route function to convert currency pair from one currency to another currency;
     /**
@@ -81,13 +102,17 @@ class PairController extends Controller
             $rate = 1 / $rate;
         }
 
-       $result = $amount * $rate;
+        $result = $amount * $rate;
+        // added conversion in table 
+       Conversions::create([
+          'pair_id' => $pair->id,
+        ]);
         return response()->json(
             [
                 'from' => $currency_from,
                 'to' => $currency_to,
                 'amount' => $amount,
-                'base_rate' => $pair->rate, // base rate is the rate of the pair's model;
+                'base_rate' => $pair->rate, // the rate of the pair's model;
                 'rate' => $rate,
                 'result' => $result
             ],
@@ -130,7 +155,25 @@ class PairController extends Controller
      */
     public function update(Request $request, Pair $pair)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'currency_id_from' => 'integer|exists:currencies,id',
+            'currency_id_to' => 'integer|exists:currencies,id',
+            'rate' => 'numeric',
+        ]);
+        // if validator fails return error message;
+        $currency_from = Currency::find($request->input('currency_id_from'));
+        $currency_to = Currency::find($request->input('currency_id_to'));
+        if ($validator->fails() || $currency_from->id == $currency_to->id) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+  
+        $pair->update([
+            'name' => $currency_from->code . '_' . $currency_to->code,
+            'currency_id_from' => $currency_from->id,
+            'currency_id_to' => $currency_to->id,
+            'rate' => $request->input('rate'),
+        ]);
+        return response()->json($pair, 200);
     }
 
     /**
@@ -141,6 +184,7 @@ class PairController extends Controller
      */
     public function destroy(Pair $pair)
     {
-        //
+        $pair->delete();
+        return response()->json(['message' => 'Pair deleted'], 200);
     }
 }

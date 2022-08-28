@@ -12,26 +12,26 @@ class AuthController extends Controller
     public function authenticate(Request $request)
     {
         $request->validate([
-			'email' => 'required|email',
-			'password' => 'required',
-		]);
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-		$user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-		if (! $user || ! Hash::check($request->password, $user->password)) {
-			throw ValidationException::withMessages([
-				'email' => ['The provided credentials are incorrect.'],
-			]);
-		}
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
+        }
 
-		return response()->json([
-			'user' => $user,
-			'access_token' => $user->createToken($request->email)->plainTextToken
-		], 200);
+        return response()->json([
+            'user' => $user,
+            'access_token' => $user->createToken($request->email)->plainTextToken
+        ], 200);
     }
-    public function logout(Request $request) {
-
-		$request->user()->currentAccessToken()->delete();
-		return response()->json(null, 200);
-	}
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'Logged out'], 200);
+    }
 }

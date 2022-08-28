@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Currency;
+use App\Models\Conversions;
 use Illuminate\Http\Request;
 
-class CurrencyController extends Controller
+class ConversionsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,10 +14,7 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        // return all currency data to json format or return error message if no currency data found;
-        $currencies = Currency::all();
-        if(!$currencies) return response()->json(['error' => 'No currency data found'], 404);
-        return response()->json($currencies, 200);
+        //
     }
 
     /**
@@ -44,10 +41,10 @@ class CurrencyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Currency  $currency
+     * @param  \App\Models\Conversions  $conversions
      * @return \Illuminate\Http\Response
      */
-    public function show(Currency $currency)
+    public function show(Conversions $conversions)
     {
         //
     }
@@ -55,10 +52,10 @@ class CurrencyController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Currency  $currency
+     * @param  \App\Models\Conversions  $conversions
      * @return \Illuminate\Http\Response
      */
-    public function edit(Currency $currency)
+    public function edit(Conversions $conversions)
     {
         //
     }
@@ -67,10 +64,10 @@ class CurrencyController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Currency  $currency
+     * @param  \App\Models\Conversions  $conversions
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Currency $currency)
+    public function update(Request $request, Conversions $conversions)
     {
         //
     }
@@ -78,10 +75,10 @@ class CurrencyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Currency  $currency
+     * @param  \App\Models\Conversions  $conversions
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Currency $currency)
+    public function destroy(Conversions $conversions)
     {
         //
     }
